@@ -1,8 +1,7 @@
 const Header = ({ course }) => <h1>{course}</h1>
 
 const Total = ({ parts }) => {
-  const nums = parts.map((part) => part.exercises)
-  const sum = nums.reduce((a, b) => a + b, 0)
+  const sum = parts.map((part) => part.exercises).reduce((a, b) => a + b, 0)
   return (
     <>
     <p>Number of exercises {sum}</p>
@@ -43,7 +42,7 @@ const App = () => {
         name: 'State of a component',
         exercises: 14,
         id: 3
-      },
+      }
     ]
   }
 
