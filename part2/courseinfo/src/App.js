@@ -1,12 +1,19 @@
 const Header = ({ course }) => <h1>{course}</h1>
 
-const Total = ({ sum }) => <p>Number of exercises {sum}</p>
+const Total = ({ parts }) => {
+  const nums = parts.map((part) => part.exercises)
+  const sum = nums.reduce((a, b) => a + b, 0)
+  return (
+    <>
+    <p>Number of exercises {sum}</p>
+    </>
+  )
+}
 
 const Part = ({ part }) => 
   <p>
     {part.name} {part.exercises}
   </p>
-
 
 const Content = ({ parts }) => parts.map((part) => <Part key={part.id} part={part} />) //so that it works with arbitrary number of parts
 
@@ -14,6 +21,7 @@ const Course = ({course}) =>
 <div>
   <Header course={course.name} />
   <Content parts={course.parts} />
+  <Total parts={course.parts} />
 </div>
 
 const App = () => {
@@ -30,6 +38,11 @@ const App = () => {
         name: 'Using props to pass data',
         exercises: 7,
         id: 2
+      },
+      {
+        name: 'State of a component',
+        exercises: 14,
+        id: 3
       },
     ]
   }
