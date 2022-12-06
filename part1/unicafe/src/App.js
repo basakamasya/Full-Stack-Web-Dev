@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-//moving the components out of the App component
+//already implemented the button
 const Button = (props) => {
   return (
     <button onClick={props.onClick}>
@@ -9,18 +9,24 @@ const Button = (props) => {
   )
 }
 
+const StatisticLine = (props) => {
+  return (
+    <p>{props.text} {props.value}</p>
+  )
+}
+
 const Statistics = (props) => {
   if (props.good === 0 && props.neutral === 0 && props.bad === 0) {
     return <p>No feedback given</p>
 }
-return <>
-  <p>good {props.good}</p>
-  <p>neutral {props.neutral}</p>
-  <p>bad {props.bad}</p>
-  <p>all {props.good+props.neutral+props.bad}</p>
-  <p>average {(props.good-props.bad)/(props.good+props.neutral+props.bad)}</p>
-  <p>positive {(props.good/(props.good+props.neutral+props.bad))*100 + " %"}</p>
-</>
+return <div>
+  <StatisticLine text="good" value={props.good}></StatisticLine>
+  <StatisticLine text="neutral" value={props.neutral}></StatisticLine>
+  <StatisticLine text="bad" value={props.bad}></StatisticLine>
+  <StatisticLine text="all" value={props.good+props.neutral+props.bad}></StatisticLine>
+  <StatisticLine text="average" value={(props.good-props.bad)/(props.good+props.neutral+props.bad)}></StatisticLine>
+  <StatisticLine text="positive" value={(props.good/(props.good+props.neutral+props.bad))*100 + " %"}></StatisticLine>
+</div>
 }
 
 const App = () => {
