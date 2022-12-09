@@ -3,24 +3,18 @@ import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 
-import axios from 'axios'
+import personService from './services/persons'
 
 const App = () => {
   const [persons, setPersons] = useState([])
 
-  const hook = () => {
-    console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('promise fulfilled')
-        setPersons(response.data)
+  useEffect(() => {
+    personService
+      .getAll()
+      .then(initialPersons => {
+        setPersons(initialPersons)
       })
-  }
-  
-  useEffect(hook, [])
-
-  console.log('render', persons.length, 'persons')
+  }, [])
 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
@@ -33,14 +27,13 @@ const App = () => {
       window.alert(`${newName} is already added to phonebook`);
     }
     else {
-      axios
-    .post('http://localhost:3001/persons', { name: newName, number: newNumber })
-    .then(response => {
-      console.log(response)
-      setPersons(persons.concat({ name: newName, number: newNumber }))
-      setNewName('')
-      setNewNumber('')
-    })     
+      personService
+      .create({ name: newName, number: newNumber })
+      .then(returned => {
+        setPersons(persons.concat(returned))
+        setNewName('')
+        setNewNumber('')
+      })    
     }
   }
 
