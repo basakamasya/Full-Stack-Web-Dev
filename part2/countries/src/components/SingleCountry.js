@@ -1,7 +1,7 @@
 const SingleCountry = (props) =>   
-<div>
+<>
   {props.countriesToShow.map(country => 
-    <>
+    <div key={country.name.common}>
     <h1>{country.name.common}</h1>
     <p>capital {country.capital}</p>
     <p>area {country.area}</p>
@@ -13,9 +13,9 @@ const SingleCountry = (props) =>
       </ul>
 
     <p>{country.flag}</p>
-    </>  
+    </div>  
   )}
 
-</div>
+</>
 
 export default SingleCountry

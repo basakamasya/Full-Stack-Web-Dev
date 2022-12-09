@@ -16,7 +16,7 @@ const App = () => {
         setCountries(response.data)
       })
   }
-  
+
   useEffect(hook, [])
 
   const [newFilter, setFilter] = useState('')
@@ -24,6 +24,12 @@ const App = () => {
   const handleFilterChange = (event) => {
     setFilter(event.target.value)
   }
+
+  const showCountry = (country) => {
+    //setCountries(country)
+    // countries.filter((countries)=> countries.name.official.toUpperCase().includes(newFilter.toUpperCase()))
+    setFilter(country.name.common)
+  }  
 
   const countriesToShow = newFilter
   ? countries.filter((countries)=> countries.name.official.toUpperCase().includes(newFilter.toUpperCase())) //conver to uppercase so that filter is case insensitive
@@ -39,6 +45,7 @@ const App = () => {
   }
   if (countriesToShow.length === 1) {
     console.log("single country", countriesToShow)
+    console.log("filter is", newFilter)
     return (
       <div>
       <Filter value={newFilter} onChange={handleFilterChange}></Filter>
@@ -49,7 +56,7 @@ const App = () => {
   return (
     <div>
       <Filter value={newFilter} onChange={handleFilterChange}></Filter>
-      <Countries countriesToShow={countriesToShow}> </Countries>
+      <Countries countriesToShow={countriesToShow} showCountry={showCountry}> </Countries>
     </div>
   )
 }
