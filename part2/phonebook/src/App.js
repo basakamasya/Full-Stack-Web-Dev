@@ -68,7 +68,6 @@ const App = () => {
         }, 5000)       
       })
       .catch(error =>{
-        console.log("here")
         setErrorMessage("Something went wrong." + newName + " couldn't be added" )
       })  
       setTimeout(() => {
