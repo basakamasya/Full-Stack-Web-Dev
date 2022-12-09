@@ -37,6 +37,21 @@ const App = () => {
     }
   }
 
+  const deletePerson = (id) => {
+    if (persons.find((person)=> person.id === id) !== undefined) {
+      if (window.confirm(`Delete ${persons.find((person)=> person.id === id).name} ?`)) {
+        //window.open("exit.html", "Thanks for Visiting!");
+        personService
+      .deletePerson({ id })
+      .then(returned => {
+        setPersons(persons.filter((person) => person.id !== id))
+        setNewName('')
+        setNewNumber('')
+      })    
+      }
+    }
+  }
+
   const handleNameChange = (event) => {
     setNewName(event.target.value)
   }
@@ -69,7 +84,7 @@ const App = () => {
       
       <h3>Numbers</h3>
 
-      <Persons personsToShow={personsToShow}/>  
+      <Persons personsToShow={personsToShow} deletePerson={deletePerson}/>  
     </div>
   )
 }
