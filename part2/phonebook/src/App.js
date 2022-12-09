@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
+import Notification from './components/Notification'
 
 import personService from './services/persons'
 
@@ -19,6 +20,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setFilter] = useState('')
+  const [successMessage, setSuccessMessage] = useState(null)
 
   const addName = (event) => {
     event.preventDefault()
@@ -29,11 +31,16 @@ const App = () => {
         personService
         .update(personId, { name: newName, number: newNumber })
         .then(returned => {
-          console.log(returned)
           setPersons(persons.map(person => person.id !== personId ? person : returned.data))
           setNewName('')
           setNewNumber('')
 
+          setSuccessMessage(
+            `Updated ${returned.data.name}`
+          )
+          setTimeout(() => {
+            setSuccessMessage(null)
+          }, 5000)
         }) 
       }
     }
@@ -44,6 +51,13 @@ const App = () => {
         setPersons(persons.concat(returned))
         setNewName('')
         setNewNumber('')
+
+        setSuccessMessage(
+          `Added ${newName}`
+        )
+        setTimeout(() => {
+          setSuccessMessage(null)
+        }, 5000)       
       })    
     }
   }
@@ -82,6 +96,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+
+      <Notification message={successMessage} />
 
       <Filter value={newFilter} onChange={handleFilterChange}></Filter>
 
