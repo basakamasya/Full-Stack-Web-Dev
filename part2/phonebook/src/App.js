@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
-import Notification from './components/Notification'
+import Success from './components/Success'
+import Error from './components/Error'
 
 import personService from './services/persons'
 
@@ -21,6 +22,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setFilter] = useState('')
   const [successMessage, setSuccessMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
 
   const addName = (event) => {
     event.preventDefault()
@@ -41,7 +43,13 @@ const App = () => {
           setTimeout(() => {
             setSuccessMessage(null)
           }, 5000)
-        }) 
+        })
+        .catch(error =>{
+          setErrorMessage("Information of " + newName + " has already been removed from server" )
+        })
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)      
       }
     }
     else {
@@ -58,21 +66,33 @@ const App = () => {
         setTimeout(() => {
           setSuccessMessage(null)
         }, 5000)       
-      })    
+      })
+      .catch(error =>{
+        console.log("here")
+        setErrorMessage("Something went wrong." + newName + " couldn't be added" )
+      })  
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)     
     }
   }
 
   const deletePerson = (id) => {
     if (persons.find((person)=> person.id === id) !== undefined) {
       if (window.confirm(`Delete ${persons.find((person)=> person.id === id).name} ?`)) {
-        //window.open("exit.html", "Thanks for Visiting!");
         personService
       .deletePerson({ id })
       .then(returned => {
         setPersons(persons.filter((person) => person.id !== id))
         setNewName('')
         setNewNumber('')
-      })    
+      })
+      .catch(error =>{
+        setErrorMessage("Something went wrong. Couldn't delete the person." )
+      }) 
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)    
       }
     }
   }
@@ -97,7 +117,8 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
 
-      <Notification message={successMessage} />
+      <Success message={successMessage} />
+      <Error message={errorMessage} />
 
       <Filter value={newFilter} onChange={handleFilterChange}></Filter>
 
