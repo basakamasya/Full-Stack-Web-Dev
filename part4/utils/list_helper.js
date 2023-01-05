@@ -10,7 +10,18 @@ const totalLikes = (array) => {
   return array.reduce(reducer, 0)
 }
 
+const favoriteBlog = (array) => {
+  let maxElement = array[0]
+  array.forEach(blog => {
+    if (blog.likes > maxElement.likes) {
+      maxElement = blog
+    }
+  })
+  return { title: maxElement.title, author: maxElement.author, likes: maxElement.likes }
+}
+
 module.exports = {
   dummy,
-  totalLikes
+  totalLikes,
+  favoriteBlog
 }
