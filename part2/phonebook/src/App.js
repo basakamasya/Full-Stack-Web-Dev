@@ -44,7 +44,7 @@ const App = () => {
             setSuccessMessage(null)
           }, 5000)
         })
-        .catch(error =>{
+        .catch(error =>{ 
           setErrorMessage("Information of " + newName + " has already been removed from server" )
         })
         setTimeout(() => {
@@ -68,7 +68,9 @@ const App = () => {
         }, 5000)       
       })
       .catch(error =>{
-        setErrorMessage("Something went wrong." + newName + " couldn't be added" )
+        //setErrorMessage("Something went wrong." + newName + " couldn't be added" )
+        console.log(error.response.data.error)
+        setErrorMessage(error.response.data.error)
       })  
       setTimeout(() => {
         setErrorMessage(null)
