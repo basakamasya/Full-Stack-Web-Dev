@@ -29,12 +29,30 @@ const mostBlogs = (array) => {
     else    dict[blog.author] = 1
   })
 
-  return Object.keys(dict).reduce(function(a, b){ return dict[a] > dict[b] ? { "author": a, "blogs": dict[a] } : { "author": b, "blogs": dict[b] } })
+  const result =  Object.entries(dict).reduce((a, b) => a[1] > b[1] ? a : b)
+
+  return { 'author': result[0], 'blogs': result[1] }
+}
+
+
+const mostLikes = (array) => {
+  let dict = Object.create(null)
+  array.forEach(blog => {
+    if (dict[blog.author]) {
+      dict[blog.author] += blog.likes
+    }
+    else    dict[blog.author] = blog.likes
+  })
+
+  const result =  Object.entries(dict).reduce((a, b) => a[1] > b[1] ? a : b)
+
+  return { 'author': result[0], 'likes': result[1] }
 }
 
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
-  mostBlogs
+  mostBlogs,
+  mostLikes
 }
