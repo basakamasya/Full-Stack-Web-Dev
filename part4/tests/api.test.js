@@ -10,10 +10,7 @@ const helper = require('./helper')
 
 beforeEach(async () => {
   await Blog.deleteMany({})
-  const blogObjects = helper.initialBlogs
-    .map(blog => new Blog(blog))
-  const promiseArray = blogObjects.map(blog => blog.save())
-  await Promise.all(promiseArray)
+  await Blog.insertMany(helper.initialBlogs)
 })
 
 test('correct amount of blog posts are returned', async () => {
@@ -101,6 +98,30 @@ test('title or url property missing from request, backend returns 400', async ()
     .expect('Content-Type', /application\/json/)
 
 })
+
+describe('deletion of a blog', () => {
+  test('succeeds with status code 204 if id is valid', async () => {
+    let response = await api.get('/api/blogs')
+    const blogsAtStart = response.body
+    const blogToBeDeleted = blogsAtStart[0]
+
+    await api
+      .delete(`/api/blogs/${blogToBeDeleted._id}`)
+      .expect(204)
+
+    response = await api.get('/api/blogs')
+    const blogsAfterDeletion = response.body
+
+    expect(blogsAfterDeletion).toHaveLength(
+      helper.initialBlogs.length - 1
+    )
+
+    const titles = blogsAfterDeletion.map(r => r.title)
+
+    expect(titles).not.toContain(blogToBeDeleted.title) //assuming titles are unique
+  })
+})
+
 
 afterAll(() => {
   mongoose.connection.close()
