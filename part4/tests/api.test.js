@@ -30,72 +30,77 @@ test('the unique identifier property of the blog posts is named id', async () =>
   })
 })
 
-test('a valid blog can be added', async () => {
-  const newBlog = {
-    title: 'New blog post coming your way',
-    author: 'BA',
-    url: '/new',
-    likes: 0,
-  }
+describe('addition of a blog', () => {
 
-  await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(201)
-    .expect('Content-Type', /application\/json/)
+  test('a valid blog can be added', async () => {
+    const newBlog = {
+      title: 'New blog post coming your way',
+      author: 'BA',
+      url: '/new',
+      likes: 0,
+    }
 
-  const response = await api.get('/api/blogs')
-  const titles = response.body.map(r => r.title)
-  const authors = response.body.map(r => r.author)
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
 
-  expect(response.body).toHaveLength(helper.initialBlogs.length + 1) //checking the length is increased by one
+    const response = await api.get('/api/blogs')
+    const titles = response.body.map(r => r.title)
+    const authors = response.body.map(r => r.author)
 
-  expect(titles).toContain( //checking the title of the post
-    'New blog post coming your way'
-  )
-  expect(authors).toContain( //checking the author of the post
-    'BA'
-  )
-})
+    expect(response.body).toHaveLength(helper.initialBlogs.length + 1) //checking the length is increased by one
 
-test('likes property missing from request, defaulted to 0', async () => {
-  const newBlog = {
-    title: 'A brand new blog with a missing property',
-    author: 'BA',
-    url: '/missingproperty',
-  }
+    expect(titles).toContain( //checking the title of the post
+      'New blog post coming your way'
+    )
+    expect(authors).toContain( //checking the author of the post
+      'BA'
+    )
+  })
 
-  const response = await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(201)
-    .expect('Content-Type', /application\/json/)
+  test('likes property missing from request, defaulted to 0', async () => {
+    const newBlog = {
+      title: 'A brand new blog with a missing property',
+      author: 'BA',
+      url: '/missingproperty',
+    }
 
-  expect(response.body.likes).toBe(0)
-})
+    const response = await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
 
-test('title or url property missing from request, backend returns 400', async () => {
-  const newBlogWithoutTitle = {
-    author: 'BA',
-    url: '/missingproperty',
-    likes: 5
-  }
-  await api
-    .post('/api/blogs')
-    .send(newBlogWithoutTitle)
-    .expect(400)
-    .expect('Content-Type', /application\/json/)
+    expect(response.body.likes).toBe(0)
+  })
 
-  const newBlogWithoutUrl= {
-    author: 'BA',
-    title: 'This one has a title',
-    likes: 5
-  }
-  await api
-    .post('/api/blogs')
-    .send(newBlogWithoutUrl)
-    .expect(400)
-    .expect('Content-Type', /application\/json/)
+
+  test('title or url property missing from request, backend returns 400', async () => {
+    const newBlogWithoutTitle = {
+      author: 'BA',
+      url: '/missingproperty',
+      likes: 5
+    }
+    await api
+      .post('/api/blogs')
+      .send(newBlogWithoutTitle)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    const newBlogWithoutUrl= {
+      author: 'BA',
+      title: 'This one has a title',
+      likes: 5
+    }
+    await api
+      .post('/api/blogs')
+      .send(newBlogWithoutUrl)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+  })
 
 })
 
@@ -123,6 +128,42 @@ describe('deletion of a blog', () => {
   test('fails with status code 404 if id is not valid', async () => {
     await api
       .delete(`/api/blogs/${helper.nonExistingId}`)
+      .expect(404)
+  })
+})
+
+describe('update a blog', () => {
+  test('succeeds with status code 204 if id is valid', async () => {
+    let response = await api.get('/api/blogs')
+    const blogsAtStart = response.body
+    const blogToBeUpdated= blogsAtStart[0]
+
+    blogToBeUpdated.title = 'Brand New Title'
+
+    response = await api
+      .put(`/api/blogs/${blogToBeUpdated._id}`)
+      .send(blogToBeUpdated)
+
+    expect(response.body.title).toContain('Brand New Title') //checking the response
+
+    response = await api.get('/api/blogs')
+    const titles = response.body.map(r => r.title)
+
+    expect(titles).toContain( //checking all the titles in the DB
+      'Brand New Title'
+    )
+  })
+  
+  test('fails with status code 404 if id is not valid', async () => {
+    const blog = {
+      title: 'This is the last test for now',
+      author: 'BA',
+      url: '/last',
+      likes: 2,
+    }
+    await api
+      .put(`/api/blogs/${helper.nonExistingId}`)
+      .send(blog)
       .expect(404)
   })
 })
