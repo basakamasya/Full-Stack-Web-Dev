@@ -120,8 +120,12 @@ describe('deletion of a blog', () => {
 
     expect(titles).not.toContain(blogToBeDeleted.title) //assuming titles are unique
   })
+  test('fails with status code 404 if id is not valid', async () => {
+    await api
+      .delete(`/api/blogs/${helper.nonExistingId}`)
+      .expect(404)
+  })
 })
-
 
 afterAll(() => {
   mongoose.connection.close()

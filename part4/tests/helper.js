@@ -1,3 +1,5 @@
+const Blog = require('../models/blog')
+
 const initialBlogs = [
   {
     title: 'HTML is easy',
@@ -13,6 +15,19 @@ const initialBlogs = [
   },
 ]
 
+const nonExistingId = async () => {
+  const blog = new Blog({
+    title: 'does not matter',
+    author: 'BA',
+    url: '/nope',
+    likes: 0, })
+  await blog.save()
+  await blog.remove()
+
+  return blog._id.toString()
+}
+
 module.exports = {
   initialBlogs,
+  nonExistingId
 }
