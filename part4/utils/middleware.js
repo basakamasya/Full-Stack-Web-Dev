@@ -31,14 +31,12 @@ const errorHandler = (error, request, response, next) => {
 
 const tokenExtractor = (request, response, next) => {
   // code that extracts the token
-  const auth = request.get('authorization')
-
-  if (!auth || auth.toLowerCase().substring(0,7) !== 'bearer ') {
-    request.token = null
+  const authorization = request.get('authorization')
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    request.token = authorization.substring(7)
   }
   else {
-    console.log(auth.toLowerCase().substring(0,7) !== 'bearer ')
-    request.token = auth.substring(7,auth.length)
+    request.token = null
   }
 
   next()
