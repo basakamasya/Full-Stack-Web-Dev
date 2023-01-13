@@ -8,42 +8,49 @@ blogsRouter.get('/', async (request, response) => {
   response.json(blogs)
 })
 
-blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
+blogsRouter.post('/', middleware.userExtractor, async (request, response, next) => {
+  try {
+    if (!request.body.url) {
+      response.status(400).json( { error: 'url missing' } ).end()
+    }
+    if (!request.body.title) {
+      response.status(400).json( { error: 'title missing' } ).end()
+    }
+    else {
+      const user = request.user
+      if (user) {
+        const blog = new Blog( {
+          title: request.body.title,
+          author: request.body.author === undefined ? '' : request.body.author,
+          url: request.body.url,
+          likes: request.body.likes === undefined ? 0 : request.body.likes,
+          user: user._id
+        })
+        const savedBlog = await blog.save()
 
-  const user = request.user
-  console.log(user)
+        user.blogs = user.blogs.concat(savedBlog._id)
+        await user.save()
 
-  if (!request.body.url) {
-    response.status(400).json( { error: 'url missing' } )
+        response.status(201).json(savedBlog)
+      }
+    }
+
   }
-  if (!request.body.title) {
-    response.status(400).json( { error: 'title missing' } )
-  }
-  else {
-    const blog = new Blog( {
-      title: request.body.title,
-      author: request.body.author === undefined ? '' : request.body.author,
-      url: request.body.url,
-      likes: request.body.likes === undefined ? 0 : request.body.likes,
-      user: user._id
-    })
-
-    const savedBlog = await blog.save()
-
-    user.blogs = user.blogs.concat(savedBlog._id)
-    await user.save()
-
-    response.status(201).json(savedBlog)
+  catch (exception) {
+    next(exception)
   }
 })
 
-blogsRouter.delete('/:id', async (request, response) => {
+blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) => {
 
   const user = request.user
 
   const blog = await Blog.findById(request.params.id)
+  if (!blog) {
+    response.status(404).end()
+  }
 
-  if ( !blog || blog.user.toString() !== user._id.toString() )  {
+  else if ( blog.user.toString() !== user._id.toString() )  {
     return response.status(401).json({ error: 'invalid user, cannot delete the post' })
   }
 

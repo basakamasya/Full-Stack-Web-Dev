@@ -5,12 +5,16 @@ const app = require('../app')
 const api = supertest(app)
 
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const helper = require('./helper')
-
+let token = ''
 
 beforeEach(async () => {
   await Blog.deleteMany({})
   await Blog.insertMany(helper.initialBlogs)
+
+  await User.deleteMany({})
+  token = await helper.addTestUser()
 })
 
 test('correct amount of blog posts are returned', async () => {
@@ -26,7 +30,7 @@ test('the unique identifier property of the blog posts is named id', async () =>
   const blogs = response.body
 
   blogs.forEach(blog => {
-    expect(blog._id).toBeDefined()
+    expect(blog.id).toBeDefined()
   })
 })
 
@@ -43,6 +47,7 @@ describe('addition of a blog', () => {
     await api
       .post('/api/blogs')
       .send(newBlog)
+      .set('Authorization', `bearer ${token}`)
       .expect(201)
       .expect('Content-Type', /application\/json/)
 
@@ -60,6 +65,31 @@ describe('addition of a blog', () => {
     )
   })
 
+  test('fails with 401 unauthorized if a token is not provided', async () => {
+    const newBlog = {
+      title: 'New blog post not coming your way',
+      author: 'BA',
+      url: '/notnew',
+      likes: 100,
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(401)
+      .expect('Content-Type', /application\/json/)
+
+    const response = await api.get('/api/blogs')
+    const titles = response.body.map(r => r.title)
+
+
+    expect(response.body).toHaveLength(helper.initialBlogs.length) //checking the length is same
+
+    expect(titles).not.toContain( //checking the title of the post
+      'New blog post not coming your way'
+    )
+  })
+
   test('likes property missing from request, defaulted to 0', async () => {
     const newBlog = {
       title: 'A brand new blog with a missing property',
@@ -70,6 +100,7 @@ describe('addition of a blog', () => {
     const response = await api
       .post('/api/blogs')
       .send(newBlog)
+      .set('Authorization', `bearer ${token}`)
       .expect(201)
       .expect('Content-Type', /application\/json/)
 
@@ -77,57 +108,79 @@ describe('addition of a blog', () => {
   })
 
 
-  test('title or url property missing from request, backend returns 400', async () => {
+  test('title property missing from request, backend returns 400', async () => {
     const newBlogWithoutTitle = {
       author: 'BA',
       url: '/missingproperty',
       likes: 5
     }
+
     await api
       .post('/api/blogs')
       .send(newBlogWithoutTitle)
-      .expect(400)
-      .expect('Content-Type', /application\/json/)
-
-    const newBlogWithoutUrl= {
-      author: 'BA',
-      title: 'This one has a title',
-      likes: 5
-    }
-    await api
-      .post('/api/blogs')
-      .send(newBlogWithoutUrl)
+      .set('Authorization', `bearer ${token}`)
       .expect(400)
       .expect('Content-Type', /application\/json/)
 
   })
 
+  test('url property missing from request, backend returns 400', async () => {
+    const newBlogWithoutUrl= {
+      author: 'BA',
+      title: 'This one has a title',
+      likes: 5
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlogWithoutUrl)
+      .set('Authorization', `bearer ${token}`)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+  })
 })
 
 describe('deletion of a blog', () => {
   test('succeeds with status code 204 if id is valid', async () => {
-    let response = await api.get('/api/blogs')
-    const blogsAtStart = response.body
-    const blogToBeDeleted = blogsAtStart[0]
 
+    const newBlog = {
+      title: 'A very very new blog',
+      author: 'BA',
+      url: '/deleting',
+    }
+
+    let response = await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .set('Authorization', `bearer ${token}`)
+
+    const responseAfterAddition = await api.get('/api/blogs')
+    const blogsAfterAddition = responseAfterAddition.body
+
+    expect(blogsAfterAddition).toHaveLength(
+      helper.initialBlogs.length + 1
+    )
+    console.log(response.body.id)
     await api
-      .delete(`/api/blogs/${blogToBeDeleted._id}`)
+      .delete(`/api/blogs/${response.body.id}`)
+      .set('Authorization', `bearer ${token}`)
       .expect(204)
 
     response = await api.get('/api/blogs')
     const blogsAfterDeletion = response.body
 
     expect(blogsAfterDeletion).toHaveLength(
-      helper.initialBlogs.length - 1
+      helper.initialBlogs.length
     )
 
     const titles = blogsAfterDeletion.map(r => r.title)
 
-    expect(titles).not.toContain(blogToBeDeleted.title) //assuming titles are unique
+    expect(titles).not.toContain(newBlog.title) //assuming titles are unique
   })
   test('fails with status code 404 if id is not valid', async () => {
     await api
       .delete(`/api/blogs/${helper.nonExistingId}`)
+      .set('Authorization', `bearer ${token}`)
       .expect(404)
   })
 })
@@ -141,7 +194,7 @@ describe('update a blog', () => {
     blogToBeUpdated.title = 'Brand New Title'
 
     response = await api
-      .put(`/api/blogs/${blogToBeUpdated._id}`)
+      .put(`/api/blogs/${blogToBeUpdated.id}`)
       .send(blogToBeUpdated)
 
     expect(response.body.title).toContain('Brand New Title') //checking the response
@@ -153,7 +206,7 @@ describe('update a blog', () => {
       'Brand New Title'
     )
   })
-  
+
   test('fails with status code 404 if id is not valid', async () => {
     const blog = {
       title: 'This is the last test for now',
