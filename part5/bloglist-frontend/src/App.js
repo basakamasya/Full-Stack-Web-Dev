@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import Notification from './components/Notification'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -10,6 +11,7 @@ const App = () => {
   const [newAuthor, setNewAuthor] = useState('')
   const [newUrl, setNewUrl] = useState('')
   const [errorMessage, setErrorMessage] = useState(null)
+  const [successMessage, setSuccessMessage] = useState(null)
 
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('') 
@@ -45,7 +47,8 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setErrorMessage('Wrong credentials')
+      console.log(exception)
+      setErrorMessage('wrong username or password')
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
@@ -64,7 +67,8 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setErrorMessage('Wrong credentials')
+      console.log(exception)
+      setErrorMessage('could not logout')
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
@@ -72,22 +76,37 @@ const App = () => {
   }
 
 
-  const addBlog = (event) => {
+  const addBlog = async (event) => {
     event.preventDefault()
-    const blog = {
-      title: newTitle,
-      author: newAuthor,
-      url: newUrl
-    }
 
-    blogService
-      .create(blog)
-      .then(returned => {
-        setBlogs(blogs.concat(returned))
-        setNewAuthor('')
-        setNewTitle('')
-        setNewUrl('')
-      })
+      const blog = {
+        title: newTitle,
+        author: newAuthor,
+        url: newUrl
+      }
+  
+      try {
+        await blogService
+        .create(blog)
+        .then(returned => {
+          setBlogs(blogs.concat(returned))
+          setNewAuthor('')
+          setNewTitle('')
+          setNewUrl('')
+          setSuccessMessage('a new blog '+ blog.title + ' by ' + blog.author + ' added')
+          setTimeout(() => {
+            setSuccessMessage(null)
+          }, 5000)
+        })
+      }
+      catch (exception) {
+        console.log(exception)
+        setErrorMessage('could not add the blog')
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+      }
+    
   }
 
   const loginForm = () => (
@@ -149,8 +168,9 @@ const App = () => {
 
   if (user === null) {
     return (
-      <div>
+      <div>              
         <h2>Log in to application</h2>
+        <Notification.Error message={errorMessage} />
         {loginForm()}
       </div>
     )
@@ -159,10 +179,12 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
+      <Notification.Success message={successMessage} />
+      <Notification.Error message={errorMessage} />
       <p>{user.name} logged in <button onClick={handleLogOut}>logout</button></p>
       <br></br>
       <h2>create new</h2>
-      {blogForm()} 
+      {blogForm()}
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
