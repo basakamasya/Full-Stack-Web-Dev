@@ -2,7 +2,6 @@ import { useState } from 'react'
 
 const BlogForm = ({ createBlog }) => {
 
-  const [blogs, setBlogs] = useState([])
   const [newTitle, setNewTitle] = useState('')
   const [newAuthor, setNewAuthor] = useState('')
   const [newUrl, setNewUrl] = useState('')

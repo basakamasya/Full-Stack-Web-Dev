@@ -102,6 +102,31 @@ const App = () => {
 
   }
 
+  const updateBlog = id => {
+    const blog = blogs.find(n => n.id === id)
+    const changedBlog = { user: blog.user.id, author: blog.author, title: blog.title, url: blog.url, likes: blog.likes + 1}
+
+    blogService
+      .update(id, changedBlog)
+      .then(returnedBlog => {
+        console.log(returnedBlog)
+
+        blogService.getAll().then(blogs =>
+          setBlogs(blogs)
+        )
+
+      })
+      .catch(error => {
+        setErrorMessage(
+          `Note '${blog.title}' was already removed from server`
+        )
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
+        setBlogs(blogs.filter(n => n.id !== id))
+      })
+  }
+
   if (user === null) {
     return (
       <div>
@@ -126,10 +151,10 @@ const App = () => {
       <p>{user.name} logged in <button onClick={handleLogOut}>logout</button></p>
       <br></br>
       <Togglable buttonLabel='create new blog' ref={blogFormRef}>
-        <BlogForm createBlog={addBlog} />
+        <BlogForm createBlog={addBlog}/>
       </Togglable>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} updateBlog={() => updateBlog(blog.id)} />
       )}
     </div>
   )
