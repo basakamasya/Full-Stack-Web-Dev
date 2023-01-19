@@ -84,7 +84,7 @@ const App = () => {
     try {
       await blogService
         .create(blogObject)
-        .then(returned => {
+        .then(() => {
           //setBlogs(blogs.concat(returned))
           blogService.getAll().then(blogs =>
             setBlogs(blogs)
@@ -107,7 +107,7 @@ const App = () => {
 
   const updateBlog = id => {
     const blog = blogs.find(n => n.id === id)
-    const changedBlog = { user: blog.user.id, author: blog.author, title: blog.title, url: blog.url, likes: blog.likes + 1}
+    const changedBlog = { user: blog.user.id, author: blog.author, title: blog.title, url: blog.url, likes: blog.likes + 1 }
 
     blogService
       .update(id, changedBlog)
@@ -120,6 +120,7 @@ const App = () => {
 
       })
       .catch(error => {
+        console.log(error)
         setErrorMessage(
           `Note '${blog.title}' was already removed from server`
         )
@@ -133,19 +134,20 @@ const App = () => {
   const compareLikes = (blog1, blog2) => {return blog2.likes - blog1.likes}
 
   const deleteBlog = (id) => {
-    if (blogs.find((person)=> person.id === id) !== undefined) {
-      if (window.confirm(`Remove blog ${blogs.find((blog)=> blog.id === id).title} by ${blogs.find((blog)=> blog.id === id).author}`)) {
+    if (blogs.find((person) => person.id === id) !== undefined) {
+      if (window.confirm(`Remove blog ${blogs.find((blog) => blog.id === id).title} by ${blogs.find((blog) => blog.id === id).author}`)) {
         blogService
-      .deleteBlog( id )
-      .then(returned => {
-        setBlogs(blogs.filter((person) => person.id !== id))
-      })
-      .catch(error =>{
-        setErrorMessage("Something went wrong. Couldn't delete the person." )
-      }) 
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)    
+          .deleteBlog( id )
+          .then(() => {
+            setBlogs(blogs.filter((person) => person.id !== id))
+          })
+          .catch(error => {
+            console.log(error)
+            setErrorMessage('Something went wrong. Couldn\'t delete the person.' )
+          })
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
       }
     }
   }
