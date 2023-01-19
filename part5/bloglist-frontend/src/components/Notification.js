@@ -23,4 +23,4 @@ const Success = ({ message }) => {
 }
 
 
-export default {Error, Success }
+export default { Error, Success }
