@@ -26,12 +26,12 @@ const Blog = ({ blog, updateBlog, removeBlog, username }) => {
           <button onClick={toggleVisibility}>view</button>
         </div>
         <div style={showWhenVisible}>
-        <button onClick={toggleVisibility}>hide</button>
+          <button onClick={toggleVisibility}>hide</button>
           <p>{blog.url}</p>
-            <p>likes {blog.likes} <button onClick={updateBlog}>like</button></p>
-            <p>{blog.user.name}</p>
-            {username === blog.user.username ?
-            <p><button onClick={removeBlog}>remove</button></p> : '' }
+          <p>likes {blog.likes} <button onClick={updateBlog}>like</button></p>
+          <p>{blog.user.name}</p>
+          {username === blog.user.username ?
+            <p><button onClick={removeBlog}>remove</button></p> : ''}
         </div>
       </div>
     </div>
