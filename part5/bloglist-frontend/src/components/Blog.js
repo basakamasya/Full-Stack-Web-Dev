@@ -19,13 +19,13 @@ const Blog = ({ blog, updateBlog, removeBlog, username }) => {
   }
 
   return (
-    <div style={blogStyle}>
-      <div>
+    <div style={blogStyle} className='blog'>
+      <div data-testid="default-info">
         {blog.title} {blog.author}
         <div style={hideWhenVisible}>
           <button onClick={toggleVisibility}>view</button>
         </div>
-        <div style={showWhenVisible}>
+        <div style={showWhenVisible} data-testid="extra-info">
           <button onClick={toggleVisibility}>hide</button>
           <p>{blog.url}</p>
           <p>likes {blog.likes} <button onClick={updateBlog}>like</button></p>
