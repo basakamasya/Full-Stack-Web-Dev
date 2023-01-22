@@ -3,6 +3,7 @@ import '@testing-library/jest-dom/extend-expect'
 import { render } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
+import BlogForm from './BlogForm'
 
 const blog = {
   title: 'Test',
@@ -81,4 +82,29 @@ test('clicking the like button twice calls event handler twice', async () => {
   await user.click(likeButton)
 
   expect(mockHandler.mock.calls).toHaveLength(2)
+})
+
+test('Blog Form calls event handler when new blog is created', async () => {
+  const createBlog = jest.fn()
+  const user = userEvent.setup()
+
+  const container = render(<BlogForm createBlog={createBlog} />)
+
+  const titleInput = container.getByTestId('title-input')
+  await user.type(titleInput, 'creating a new title')
+
+  const authorInput = container.getByTestId('author-input')
+  await user.type(authorInput, 'creating a new author')
+
+  const urlInput = container.getByTestId('url-input')
+  await user.type(urlInput, 'creating a new url')
+
+  const sendButton = container.getByTestId('create-button')
+  await user.click(sendButton)
+
+  expect(createBlog.mock.calls).toHaveLength(1)
+
+  expect(createBlog.mock.calls[0][0].title).toBe('creating a new title')
+  expect(createBlog.mock.calls[0][0].author).toBe('creating a new author')
+  expect(createBlog.mock.calls[0][0].url).toBe('creating a new url')
 })
