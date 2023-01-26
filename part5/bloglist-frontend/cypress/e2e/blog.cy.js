@@ -39,4 +39,23 @@ describe('Blog app', function() {
       cy.get('html').should('not.contain', 'Burak logged in')
     })
   })
+
+  describe('When logged in', function() {
+    beforeEach(function() {
+      cy.get('#username').type('burak')
+      cy.get('#password').type('sifre')
+      cy.get('#login-button').click()
+
+    })
+
+    it('A blog can be created', function() {
+      cy.contains('create new blog').click()
+      cy.get('#title').type('a blog created by cypress')
+      cy.get('#author').type('cypress')
+      cy.get('#url').type('/cypress')
+      cy.get('#create').click()
+      cy.contains('a blog created by cypress')
+    })
+  })
+
 })
