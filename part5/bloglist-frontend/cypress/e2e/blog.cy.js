@@ -56,6 +56,20 @@ describe('Blog app', function() {
       cy.get('#create').click()
       cy.contains('a blog created by cypress')
     })
+
+    it('A blog can be created and liked', function() {
+      cy.contains('create new blog').click()
+      cy.get('#title').type('a brand new blog created by cypress')
+      cy.get('#author').type('cypress')
+      cy.get('#url').type('/cypress2')
+      cy.get('#create').click()
+      cy.contains('a brand new blog created by cypress')
+
+      cy.get('#view').click()
+      cy.contains('likes 0')
+      cy.get('#like').click()
+      cy.contains('likes 1')
+    })
   })
 
 })

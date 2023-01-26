@@ -23,12 +23,12 @@ const Blog = ({ blog, updateBlog, removeBlog, username }) => {
       <div data-testid="default-info">
         {blog.title} {blog.author}
         <div style={hideWhenVisible}>
-          <button onClick={toggleVisibility} data-testid="view-button">view</button>
+          <button onClick={toggleVisibility} data-testid="view-button" id="view">view</button>
         </div>
         <div style={showWhenVisible} data-testid="extra-info">
           <button onClick={toggleVisibility}>hide</button>
           <p data-testid="url">{blog.url}</p>
-          <p data-testid="likes">likes {blog.likes} <button onClick={updateBlog} data-testid="like-button">like</button></p>
+          <p data-testid="likes">likes {blog.likes} <button onClick={updateBlog} data-testid="like-button" id="like">like</button></p>
           <p>{blog.user.name}</p>
           {username === blog.user.username ?
             <p><button onClick={removeBlog}>remove</button></p> : ''}
