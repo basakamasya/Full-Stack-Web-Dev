@@ -1,6 +1,13 @@
 describe('Blog app', function() {
   beforeEach(function() {
     cy.request('POST', 'http://localhost:3000/api/testing/reset')
+    //create a user
+    const user = {
+      name: 'Burak',
+      username: 'burak',
+      password: 'sifre'
+    }
+    cy.request('POST', 'http://localhost:3000/api/users', user)
     cy.visit('http://localhost:3000/')
   })
 
@@ -8,5 +15,28 @@ describe('Blog app', function() {
     cy.contains('Log in to application')
     cy.contains('username')
     cy.contains('password')
+  })
+
+  describe('Login',function() {
+    it('succeeds with correct credentials', function() {
+      cy.get('#username').type('burak')
+      cy.get('#password').type('sifre')
+      cy.get('#login-button').click()
+
+      cy.contains('Burak logged in')
+    })
+
+    it('fails with wrong credentials', function() {
+      cy.get('#username').type('burak')
+      cy.get('#password').type('wrong')
+      cy.get('#login-button').click()
+
+      cy.get('.error')
+        .should('contain', 'wrong username or password')
+        .and('have.css', 'color', 'rgb(255, 0, 0)')
+        .and('have.css', 'border-style', 'solid')
+
+      cy.get('html').should('not.contain', 'Burak logged in')
+    })
   })
 })
