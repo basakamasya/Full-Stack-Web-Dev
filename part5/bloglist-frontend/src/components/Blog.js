@@ -31,7 +31,7 @@ const Blog = ({ blog, updateBlog, removeBlog, username }) => {
           <p data-testid="likes">likes {blog.likes} <button onClick={updateBlog} data-testid="like-button" id="like">like</button></p>
           <p>{blog.user.name}</p>
           {username === blog.user.username ?
-            <p><button onClick={removeBlog}>remove</button></p> : ''}
+            <p><button onClick={removeBlog} id="delete">remove</button></p> : ''}
         </div>
       </div>
     </div>

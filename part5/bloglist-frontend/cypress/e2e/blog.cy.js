@@ -70,6 +70,22 @@ describe('Blog app', function() {
       cy.get('#like').click()
       cy.contains('likes 1')
     })
+
+    it('A blog can be created and deleted by the user who created', function() {
+      cy.contains('create new blog').click()
+      cy.get('#title').type('very special')
+      cy.get('#author').type('cypress')
+      cy.get('#url').type('/cypress3')
+      cy.get('#create').click()
+      cy.contains('very special')
+      cy.wait(1000)
+
+      cy.get('#view').click()
+      cy.get('#delete').click()
+      cy.on('windows:confirm', () => true)
+      cy.get('html').should('not.contain', 'very special')
+    })
+
   })
 
 })
