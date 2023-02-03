@@ -39,8 +39,6 @@ const App = () => {
   )
 }
 
-
-
 const renderApp = () => {
   ReactDOM.createRoot(document.getElementById('root')).render(<App />)
 }
