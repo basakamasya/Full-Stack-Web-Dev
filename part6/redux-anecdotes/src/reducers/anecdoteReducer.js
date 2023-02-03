@@ -55,4 +55,13 @@ export const createAnc = (content) => {
   }
 }
 
+export const increaseVote = (id) => {
+  return {
+    type: 'Vote',
+    data: {
+      voteId: id
+    }
+  }
+}
+
 export default reducer
