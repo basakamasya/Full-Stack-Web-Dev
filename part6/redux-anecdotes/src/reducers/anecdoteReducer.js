@@ -51,50 +51,6 @@ const anecdoteSlice = createSlice({
   }
 })
 
-/*
-const reducer = (state = initialState, action) => {
-  switch (action.type) {
-    case 'Vote': {
-      const id = action.data.voteId
-      const ancToChange = state.find((anc) => {
-        return anc.id === id;
-      })
-
-      const changedAnc = {
-        ...ancToChange,
-        votes: ancToChange.votes + 1
-      }
-      return state.map(anc => anc.id !== changedAnc.id ? anc : changedAnc)
-    }
-    case 'NewAnecdote':
-      return [...state, action.data]
-    default:
-      return state
-  }
-
-}
-
-
-export const createAnc = (content) => {
-  return {
-    type: 'NewAnecdote',
-    data: {
-      content: content,
-      votes: 0,
-      id: getId()
-    }
-  }
-}
-
-export const increaseVote = (id) => {
-  return {
-    type: 'Vote',
-    data: {
-      voteId: id
-    }
-  }
-}*/
-
 export default anecdoteSlice.reducer
 
-export const {createAnc, increaseVote } = anecdoteSlice.actions
+export const { createAnc, increaseVote } = anecdoteSlice.actions

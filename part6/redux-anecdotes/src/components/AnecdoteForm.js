@@ -1,5 +1,6 @@
 import { useDispatch } from 'react-redux'
 import { createAnc } from '../reducers/anecdoteReducer'
+import { display, hide } from "../reducers/notificationReducer"
 
 const NewAnc = () => {
   const dispatch = useDispatch()
@@ -10,6 +11,10 @@ const NewAnc = () => {
     const content = event.target.content.value
     event.target.content.value = ''
     dispatch(createAnc(content))
+    dispatch(display(`you have created '${content}'`))
+    setTimeout(() => {
+      dispatch(hide())
+    }, 5000)
   }
 
   return (
