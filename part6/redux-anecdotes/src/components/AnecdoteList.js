@@ -12,10 +12,7 @@ const AnectodeList = () => {
     return filteredAnecdotes
   })
 
-  const anecdotes = useSelector(state =>
-    //state.anecdotes
-    filteredAnecdotes
-  )
+  const anecdotes = [...filteredAnecdotes]
   const dispatch = useDispatch()
 
   const vote = (id) => {
