@@ -3,14 +3,11 @@ import anecdotes from '../services/anecdotes'
 
 const getId = () => (100000 * Math.random()).toFixed(0)
 
-//const initialState = anecdotesAtStart.map(asObject)
-
 const anecdoteSlice = createSlice({
   name: 'anecdotes',
   initialState: [],
   reducers: {
     increaseVote(state, action) {
-      //const id = action.data.voteId
       const id = action.payload
       const ancToChange = state.find((anc) => {
         return anc.id === id;
@@ -22,8 +19,11 @@ const anecdoteSlice = createSlice({
       }
       return state.map(anc => anc.id !== changedAnc.id ? anc : changedAnc)
     },
-    createAnc(state, action) {
-      //const content = action.payload
+    //createAnc(state, action) {
+    //const content = action.payload
+    //state.push(action.payload)
+    //},
+    appendAnc(state, action) {
       state.push(action.payload)
     },
     setAnecdotes(state, action) {
@@ -39,6 +39,13 @@ export const initializeAnecdotes = () => {
   }
 }
 
+export const createAnc = content => {
+  return async dispatch => {
+    const newNote = await anecdotes.createNew(content)
+    dispatch(appendAnc(newNote))
+  }
+}
+
 export default anecdoteSlice.reducer
 
-export const { createAnc, increaseVote, setAnecdotes } = anecdoteSlice.actions
+export const { increaseVote, setAnecdotes, appendAnc } = anecdoteSlice.actions
