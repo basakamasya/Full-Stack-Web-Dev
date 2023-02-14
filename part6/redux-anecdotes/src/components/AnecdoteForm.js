@@ -3,11 +3,8 @@ import { createAnc } from '../reducers/anecdoteReducer'
 import { setNotification } from "../reducers/notificationReducer"
 
 const NewAnc = (props) => {
-  //const dispatch = useDispatch()
-
   const addAnc = async (event) => {
     event.preventDefault()
-    console.log(event.target)
     const content = event.target.content.value
     event.target.content.value = ''
     props.createAnc(content)
@@ -25,8 +22,6 @@ const NewAnc = (props) => {
 
   )
 }
-
-//export default NewAnc
 
 const mapStateToProps = (state) => {
   return {

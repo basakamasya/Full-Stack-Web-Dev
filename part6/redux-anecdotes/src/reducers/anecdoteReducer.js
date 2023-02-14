@@ -39,7 +39,7 @@ export const increaseVote = anecdote => {
       votes: anecdote.votes + 1
     }
     dispatch(incrementVote(changedAnc))
-    await anecdotes.vote(anecdote, changedAnc)
+    await anecdotes.vote(changedAnc)
   }
 }
 

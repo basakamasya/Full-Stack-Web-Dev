@@ -19,7 +19,6 @@ const AnectodeList = () => {
   const vote = (id) => {
     const anc = anecdotes.filter(anc => anc.id === id)
     dispatch(increaseVote(anc[0]))
-    //dispatch(display(`you voted '${anc[0].content}'`))
     dispatch(setNotification(`you voted '${anc[0].content}'`, 10))
   }
 

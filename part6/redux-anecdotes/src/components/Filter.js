@@ -2,7 +2,6 @@ import { filterChange } from '../reducers/filterReducer'
 import { connect } from 'react-redux'
 
 const Filter = (props) => {
-  //const dispatch = useDispatch()
   const handleChange = (event) => {
     const filterValue = event.target.value
     props.filterChange(filterValue)
@@ -17,8 +16,6 @@ const Filter = (props) => {
     </div>
   )
 }
-
-//export default Filter
 
 const mapStateToProps = (state) => {
   return {
