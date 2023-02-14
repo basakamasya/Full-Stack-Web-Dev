@@ -3,7 +3,8 @@ import {
   Routes,
   Route,
   Link,
-  useMatch
+  useMatch,
+  useNavigate
 } from "react-router-dom"
 
 const Menu = (props) => {
@@ -22,7 +23,7 @@ const Menu = (props) => {
       <Link style={padding} to="/about">about</Link>
       <Routes>
         <Route path="/anecdotes" element={<AnecdoteList anecdotes={props.anecdotes} />} />
-        <Route path="/create" element={<CreateNew addNew={props.addNew} />} />
+        <Route path="/create" element={<CreateNew addNew={props.addNew} setNotification={props.setNotification} />} />
         <Route path="/about" element={<About />} />
         <Route path="/" element={<AnecdoteList anecdotes={props.anecdotes} />} />
         <Route path="/anecdotes/:id" element={<Anecdote anecdote={anecdote} />} />
@@ -72,10 +73,27 @@ const Footer = () => (
   </div>
 )
 
+const Notification = (props) => {
+  const notification = props.notification
+  const style = {
+    border: 'solid',
+    padding: 10,
+    borderWidth: 1
+  }
+  if (notification)
+    return (
+      <div style={style}>
+        {notification}
+      </div>
+    )
+}
+
 const CreateNew = (props) => {
   const [content, setContent] = useState('')
   const [author, setAuthor] = useState('')
   const [info, setInfo] = useState('')
+
+  const navigate = useNavigate()
 
 
   const handleSubmit = (e) => {
@@ -86,6 +104,11 @@ const CreateNew = (props) => {
       info,
       votes: 0
     })
+    navigate('/')
+    props.setNotification(`you have created a new anecdote ${content}`)
+    setTimeout(() => {
+      props.setNotification('')
+    }, 5000)
   }
 
   return (
@@ -153,7 +176,8 @@ const App = () => {
   return (
     <div>
       <h1>Software anecdotes</h1>
-      <Menu anecdotes={anecdotes} addNew={addNew}></Menu>
+      <Notification notification={notification} />
+      <Menu anecdotes={anecdotes} addNew={addNew} setNotification={setNotification}></Menu>
       <Footer />
     </div>
   )
