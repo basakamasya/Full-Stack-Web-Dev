@@ -6,11 +6,13 @@ import Notification from './components/Notification'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { setNotification } from './reducers/notificationReducer'
+import { initializeBlogs, createBlog } from './reducers/blogReducer'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
+  const stateBlogs = useSelector((state) => state.blogs)
+  const blogs = [...stateBlogs]
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -21,8 +23,9 @@ const App = () => {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs))
-  }, [])
+    dispatch(initializeBlogs())
+  }, [dispatch])
+  console.log(blogs)
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedUser')
@@ -71,8 +74,8 @@ const App = () => {
     blogFormRef.current.toggleVisibility()
 
     try {
-      await blogService.create(blogObject).then(() => {
-        blogService.getAll().then((blogs) => setBlogs(blogs))
+      await dispatch(createBlog(blogObject)).then(() => {
+        dispatch(initializeBlogs())
         dispatch(setNotification('a new blog ' +
         blogObject.title +
         ' by ' +
@@ -99,13 +102,13 @@ const App = () => {
       .update(id, changedBlog)
       .then((returnedBlog) => {
         console.log(returnedBlog)
-        blogService.getAll().then((blogs) => setBlogs(blogs))
+        dispatch(initializeBlogs())
         dispatch(setNotification('Blog liked.'))
       })
       .catch((error) => {
         console.log(error)
         dispatch(setNotification(`'${blog.title}' was already removed from server`))
-        setBlogs(blogs.filter((n) => n.id !== id))
+        dispatch(initializeBlogs())
       })
   }
 
@@ -125,7 +128,7 @@ const App = () => {
         blogService
           .deleteBlog(id)
           .then(() => {
-            setBlogs(blogs.filter((person) => person.id !== id))
+            dispatch(initializeBlogs())
             dispatch(setNotification('Blog deleted.'))
           })
           .catch((error) => {
