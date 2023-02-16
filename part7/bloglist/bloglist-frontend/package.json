@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@reduxjs/toolkit": "^1.9.2",
     "@testing-library/user-event": "^14.1.1",
     "axios": "^0.27.2",
     "prop-types": "^15.8.1",
