@@ -10,19 +10,19 @@ const notificationSlice = createSlice({
     display(state, action) {
       return action.payload
     },
-    hide(state, action) {
+    hide() {
       return initialState
     },
   },
 })
 
-export const setNotification = (m, ms) => {
+export const setNotification = (m) => {
   return async (dispatch) => {
     clearTimeout(timeID)
     dispatch(display(m))
     timeID = setTimeout(() => {
       dispatch(hide())
-    }, ms * 1000)
+    }, 5000)
   }
 }
 

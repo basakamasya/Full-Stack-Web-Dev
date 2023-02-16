@@ -6,17 +6,19 @@ import Notification from './components/Notification'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
+import { useDispatch } from 'react-redux'
+import { setNotification } from './reducers/notificationReducer'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [errorMessage, setErrorMessage] = useState(null)
-  const [successMessage, setSuccessMessage] = useState(null)
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
   const blogFormRef = useRef()
+
+  const dispatch = useDispatch()
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs))
@@ -46,10 +48,7 @@ const App = () => {
       setPassword('')
     } catch (exception) {
       console.log(exception)
-      setErrorMessage('wrong username or password')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+      dispatch(setNotification('wrong username or password'))
     }
   }
 
@@ -64,10 +63,7 @@ const App = () => {
       setPassword('')
     } catch (exception) {
       console.log(exception)
-      setErrorMessage('could not logout')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+      dispatch(setNotification('could not logout'))
     }
   }
 
@@ -76,25 +72,16 @@ const App = () => {
 
     try {
       await blogService.create(blogObject).then(() => {
-        //setBlogs(blogs.concat(returned))
         blogService.getAll().then((blogs) => setBlogs(blogs))
-        setSuccessMessage(
-          'a new blog ' +
-            blogObject.title +
-            ' by ' +
-            blogObject.author +
-            ' added'
-        )
-        setTimeout(() => {
-          setSuccessMessage(null)
-        }, 5000)
+        dispatch(setNotification('a new blog ' +
+        blogObject.title +
+        ' by ' +
+        blogObject.author +
+        ' added'))
       })
     } catch (exception) {
       console.log(exception)
-      setErrorMessage('could not add the blog')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+      dispatch(setNotification('could not add the blog'))
     }
   }
 
@@ -112,15 +99,12 @@ const App = () => {
       .update(id, changedBlog)
       .then((returnedBlog) => {
         console.log(returnedBlog)
-
         blogService.getAll().then((blogs) => setBlogs(blogs))
+        dispatch(setNotification('Blog liked.'))
       })
       .catch((error) => {
         console.log(error)
-        setErrorMessage(`Note '${blog.title}' was already removed from server`)
-        setTimeout(() => {
-          setErrorMessage(null)
-        }, 5000)
+        dispatch(setNotification(`'${blog.title}' was already removed from server`))
         setBlogs(blogs.filter((n) => n.id !== id))
       })
   }
@@ -142,16 +126,12 @@ const App = () => {
           .deleteBlog(id)
           .then(() => {
             setBlogs(blogs.filter((person) => person.id !== id))
+            dispatch(setNotification('Blog deleted.'))
           })
           .catch((error) => {
             console.log(error)
-            setErrorMessage(
-              'Something went wrong. Couldn\'t delete the person.'
-            )
-          })
-        setTimeout(() => {
-          setErrorMessage(null)
-        }, 5000)
+            dispatch(setNotification('Something went wrong. Couldn\'t delete the person.'))
+          }, 5000)
       }
     }
   }
@@ -160,7 +140,7 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
-        <Notification.Error message={errorMessage} />
+        <Notification />
         <LoginForm
           username={username}
           password={password}
@@ -175,8 +155,7 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      <Notification.Success message={successMessage} />
-      <Notification.Error message={errorMessage} />
+      <Notification />
       <p>
         {user.name} logged in <button onClick={handleLogOut}>logout</button>
       </p>
