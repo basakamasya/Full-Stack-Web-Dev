@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef } from 'react'
-import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import userService from './services/users'
+import Blog from './components/Blog'
 import Notification from './components/Notification'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
+import User from './components/User'
 import { useDispatch, useSelector } from 'react-redux'
+import { Routes, Route } from 'react-router-dom'
 import { setNotification } from './reducers/notificationReducer'
 import { initializeBlogs, createBlog } from './reducers/blogReducer'
 
@@ -17,6 +20,7 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  const [users, setUsers] = useState(null)
 
   const blogFormRef = useRef()
 
@@ -26,6 +30,11 @@ const App = () => {
     dispatch(initializeBlogs())
   }, [dispatch])
   console.log(blogs)
+
+  useEffect(() => {
+    userService.getAll().then((users) => setUsers(users))
+    console.log('here', users)
+  }, [])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedUser')
@@ -155,18 +164,20 @@ const App = () => {
     )
   }
 
-  return (
-    <div>
-      <h2>blogs</h2>
-      <Notification />
-      <p>
-        {user.name} logged in <button onClick={handleLogOut}>logout</button>
-      </p>
-      <br></br>
-      <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-        <BlogForm createBlog={addBlog} />
-      </Togglable>
-      {blogs.sort(compareLikes) &&
+  const Blogs = () => {
+    return (
+      <div>
+        <div>
+          <h2>blogs</h2>
+          <Notification />
+          <p>
+            {user.name} logged in <button onClick={handleLogOut}>logout</button>
+          </p>
+          <br></br>
+          <Togglable buttonLabel="create new blog" ref={blogFormRef}>
+            <BlogForm createBlog={addBlog} />
+          </Togglable>
+          {blogs.sort(compareLikes) &&
         blogs.map((blog) => (
           <Blog
             key={blog.id}
@@ -176,8 +187,25 @@ const App = () => {
             username={user.username}
           />
         ))}
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <h2>blogs</h2>
+      <p>
+        {user.name} logged in <button onClick={handleLogOut}>logout</button>
+      </p>
+      <br></br>
+      <Routes>
+        <Route path="/" element={<Blogs />} />
+        <Route path="/users" element={<User users={users} />} />
+      </Routes>
     </div>
   )
 }
+
 
 export default App
